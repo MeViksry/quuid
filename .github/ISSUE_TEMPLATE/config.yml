@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/MeViksry/quuid/security
+    about: Report undisclosed security vulnerabilities privately.
+  - name: Go package documentation
+    url: https://pkg.go.dev/github.com/MeViksry/quuid
+    about: Review the exported API documentation before opening a usage question.

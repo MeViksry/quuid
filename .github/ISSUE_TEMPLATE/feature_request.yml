@@ -1,0 +1,38 @@
+name: Feature request
+description: Propose a focused API, compatibility, performance, or documentation improvement
+title: "proposal: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Describe the concrete application problem rather than only the requested API.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Include suggested API shape, strictness, SQL behavior, and security assumptions.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Compatibility and migration impact
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Design constraints
+      options:
+        - label: The proposal does not require a hidden package-global behavior switch.
+          required: true
+        - label: The proposal does not introduce a custom cryptographic primitive.
+          required: true
+        - label: I have considered malformed input and null database behavior.
+          required: true
