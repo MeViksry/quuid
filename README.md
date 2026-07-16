@@ -224,7 +224,7 @@ The keyed secret must contain at least 32 bytes from a secure random source and 
 id, err := quuid.ParseUUID("018fbd2e-7b46-7cc0-98c4-89e6f6dc0c22")
 ```
 
-`ParseUUID` accepts exactly the canonical 36-character representation. It rejects:
+`ParseUUID` accepts exactly the canonical 36-character representation. `ParseUUIDBytes` applies the same strict rules to canonical `[]byte` input from SQL drivers, queues, and wire protocols without converting through string first. Both reject:
 
 ```text
 " 018fbd2e-7b46-7cc0-98c4-89e6f6dc0c22"
@@ -595,7 +595,32 @@ quuid -type sortable
 quuid -type token
 quuid -type uuid8 -namespace invoice -data INV-2026-00042
 quuid -type uuid7 -json
+quuid -version
 ```
+
+## Automated releases and packages
+
+GitHub automation publishes release assets and packages without adding runtime dependencies to the module. The workflows run on the repository's `self-hosted` runner label, matching the CI setup.
+
+Every push to `main` updates a single prerelease named `nightly` with fresh CLI archives and checksums. This keeps the Releases page active without creating a noisy release for every commit.
+
+Push a semantic version tag to create an official GitHub Release:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+The release workflow verifies the candidate, builds `quuid` CLI archives for Linux, macOS, and Windows on amd64 and arm64, generates `checksums.txt`, and uploads everything to the GitHub Release.
+
+The package workflow publishes a GitHub Container Registry image for the CLI:
+
+- `ghcr.io/meviksry/quuid:edge` on pushes to `main`;
+- `ghcr.io/meviksry/quuid:sha-<commit>` on every packaged push;
+- `ghcr.io/meviksry/quuid:vX.Y.Z` on release tags;
+- `ghcr.io/meviksry/quuid:latest` on stable release tags.
+
+The package runner must have Docker available and permission to push packages with `GITHUB_TOKEN`.
 
 ## Testing
 
@@ -614,10 +639,13 @@ go vet ./...
 go test -run '^$' -bench . -benchmem ./...
 ```
 
+The unit suite includes a fixed-clock concurrent UUIDv7 stress test. The benchmark suite includes sequential and parallel UUIDv7 generation plus parser allocation checks.
+
 Parser fuzzing:
 
 ```bash
 go test -fuzz='^FuzzParseUUID$' -fuzztime=30s .
+go test -fuzz='^FuzzParseUUIDBytes$' -fuzztime=30s .
 go test -fuzz='^FuzzParseUUIDLoose$' -fuzztime=30s .
 go test -fuzz='^FuzzParseID$' -fuzztime=30s .
 go test -fuzz='^FuzzParseStrongID$' -fuzztime=30s .

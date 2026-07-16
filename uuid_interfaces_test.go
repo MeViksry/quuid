@@ -2,10 +2,43 @@ package quuid
 
 import (
 	"bytes"
+	"database/sql"
+	"database/sql/driver"
+	"encoding"
 	"encoding/json"
 	"errors"
 	"testing"
 	"time"
+)
+
+var (
+	_ encoding.TextMarshaler     = UUID{}
+	_ encoding.TextUnmarshaler   = (*UUID)(nil)
+	_ encoding.BinaryMarshaler   = UUID{}
+	_ encoding.BinaryUnmarshaler = (*UUID)(nil)
+	_ json.Marshaler             = UUID{}
+	_ json.Unmarshaler           = (*UUID)(nil)
+	_ sql.Scanner                = (*UUID)(nil)
+	_ driver.Valuer              = UUID{}
+
+	_ encoding.TextMarshaler     = BinaryUUID{}
+	_ encoding.TextUnmarshaler   = (*BinaryUUID)(nil)
+	_ encoding.BinaryMarshaler   = BinaryUUID{}
+	_ encoding.BinaryUnmarshaler = (*BinaryUUID)(nil)
+	_ json.Marshaler             = BinaryUUID{}
+	_ json.Unmarshaler           = (*BinaryUUID)(nil)
+	_ sql.Scanner                = (*BinaryUUID)(nil)
+	_ driver.Valuer              = BinaryUUID{}
+
+	_ json.Marshaler   = NullUUID{}
+	_ json.Unmarshaler = (*NullUUID)(nil)
+	_ sql.Scanner      = (*NullUUID)(nil)
+	_ driver.Valuer    = NullUUID{}
+
+	_ json.Marshaler   = NullBinaryUUID{}
+	_ json.Unmarshaler = (*NullBinaryUUID)(nil)
+	_ sql.Scanner      = (*NullBinaryUUID)(nil)
+	_ driver.Valuer    = NullBinaryUUID{}
 )
 
 func TestUUIDEncodingInterfaces(t *testing.T) {

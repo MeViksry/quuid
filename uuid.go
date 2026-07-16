@@ -5,7 +5,6 @@ import (
 	"crypto/rand"
 	"crypto/sha512"
 	"crypto/subtle"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -286,19 +285,20 @@ func ParseUUID(s string) (UUID, error) {
 	if s[8] != '-' || s[13] != '-' || s[18] != '-' || s[23] != '-' {
 		return NilUUID, ErrInvalidEncoding
 	}
+	return parseUUIDStringHexAt(s, &canonicalUUIDHexOffsets)
+}
 
-	var id UUID
-	sections := [][2]int{{0, 8}, {9, 13}, {14, 18}, {19, 23}, {24, 36}}
-	offset := 0
-	for _, section := range sections {
-		part := s[section[0]:section[1]]
-		decoded := id[offset : offset+len(part)/2]
-		if _, err := hex.Decode(decoded, []byte(part)); err != nil {
-			return NilUUID, fmt.Errorf("%w: %v", ErrInvalidEncoding, err)
-		}
-		offset += len(decoded)
+// ParseUUIDBytes accepts only the canonical 36-byte UUID representation.
+// It is useful for SQL drivers and message transports that expose textual UUIDs
+// as []byte.
+func ParseUUIDBytes(text []byte) (UUID, error) {
+	if len(text) != 36 {
+		return NilUUID, ErrInvalidLength
 	}
-	return id, nil
+	if text[8] != '-' || text[13] != '-' || text[18] != '-' || text[23] != '-' {
+		return NilUUID, ErrInvalidEncoding
+	}
+	return parseUUIDBytesHexAt(text, &canonicalUUIDHexOffsets)
 }
 
 // ParseUUIDLoose is an explicit migration helper. It accepts canonical UUIDs,
@@ -314,11 +314,7 @@ func ParseUUIDLoose(s string) (UUID, error) {
 		s = s[1:37]
 	}
 	if len(s) == 32 {
-		var id UUID
-		if _, err := hex.Decode(id[:], []byte(s)); err != nil {
-			return NilUUID, fmt.Errorf("%w: %v", ErrInvalidEncoding, err)
-		}
-		return id, nil
+		return parseUUIDStringHexAt(s, &rawUUIDHexOffsets)
 	}
 	return ParseUUID(s)
 }
@@ -461,7 +457,7 @@ func (id *UUID) UnmarshalText(text []byte) error {
 	if id == nil {
 		return fmt.Errorf("quuid: UnmarshalText on nil *UUID")
 	}
-	parsed, err := ParseUUID(string(text))
+	parsed, err := ParseUUIDBytes(text)
 	if err != nil {
 		return err
 	}
@@ -531,4 +527,64 @@ func putUUIDv7Milliseconds(id *UUID, ms uint64) {
 	id[3] = byte(ms >> 16)
 	id[4] = byte(ms >> 8)
 	id[5] = byte(ms)
+}
+
+var (
+	canonicalUUIDHexOffsets = [...]int{0, 2, 4, 6, 9, 11, 14, 16, 19, 21, 24, 26, 28, 30, 32, 34}
+	rawUUIDHexOffsets       = [...]int{0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30}
+	uuidHexDecode           = newUUIDHexDecodeTable()
+)
+
+func parseUUIDStringHexAt(s string, offsets *[UUIDSize]int) (UUID, error) {
+	var id UUID
+	for i, offset := range offsets {
+		high, ok := hexNibble(s[offset])
+		if !ok {
+			return NilUUID, fmt.Errorf("%w: invalid hexadecimal digit at offset %d", ErrInvalidEncoding, offset)
+		}
+		low, ok := hexNibble(s[offset+1])
+		if !ok {
+			return NilUUID, fmt.Errorf("%w: invalid hexadecimal digit at offset %d", ErrInvalidEncoding, offset+1)
+		}
+		id[i] = high<<4 | low
+	}
+	return id, nil
+}
+
+func parseUUIDBytesHexAt(text []byte, offsets *[UUIDSize]int) (UUID, error) {
+	var id UUID
+	for i, offset := range offsets {
+		high, ok := hexNibble(text[offset])
+		if !ok {
+			return NilUUID, fmt.Errorf("%w: invalid hexadecimal digit at offset %d", ErrInvalidEncoding, offset)
+		}
+		low, ok := hexNibble(text[offset+1])
+		if !ok {
+			return NilUUID, fmt.Errorf("%w: invalid hexadecimal digit at offset %d", ErrInvalidEncoding, offset+1)
+		}
+		id[i] = high<<4 | low
+	}
+	return id, nil
+}
+
+func hexNibble(c byte) (byte, bool) {
+	value := uuidHexDecode[c]
+	return value, value != 0xff
+}
+
+func newUUIDHexDecodeTable() [256]byte {
+	var table [256]byte
+	for i := range table {
+		table[i] = 0xff
+	}
+	for c := byte('0'); c <= byte('9'); c++ {
+		table[c] = c - '0'
+	}
+	for c := byte('a'); c <= byte('f'); c++ {
+		table[c] = c - 'a' + 10
+	}
+	for c := byte('A'); c <= byte('F'); c++ {
+		table[c] = c - 'A' + 10
+	}
+	return table
 }

@@ -29,7 +29,7 @@ The public `UUID` type is `[16]byte`. This preserves explicit conversion compati
 xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ```
 
-`ParseUUID` accepts only this 36-character shape. `ParseUUIDLoose` is a separately named migration API for a documented, bounded set of legacy text formats.
+`ParseUUID` and `ParseUUIDBytes` accept only this 36-character shape. `ParseUUIDLoose` is a separately named migration API for a documented, bounded set of legacy text formats.
 
 No parser performs Microsoft mixed-endian field reinterpretation.
 

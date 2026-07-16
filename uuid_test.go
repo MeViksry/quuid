@@ -180,6 +180,49 @@ func TestUUIDStrictAndLooseParsing(t *testing.T) {
 	}
 }
 
+func TestUUIDByteParsingAndAllocationContract(t *testing.T) {
+	inputString := "A3BB189E-8BF9-4888-9912-ACE4E6543002"
+	input := []byte("A3BB189E-8BF9-4888-9912-ACE4E6543002")
+	want := MustParseUUID("a3bb189e-8bf9-4888-9912-ace4e6543002")
+
+	var got UUID
+	allocs := testing.AllocsPerRun(1000, func() {
+		var err error
+		got, err = ParseUUID(inputString)
+		if err != nil {
+			t.Fatal(err)
+		}
+	})
+	if got != want {
+		t.Fatalf("got %s, want %s", got, want)
+	}
+	if allocs != 0 {
+		t.Fatalf("ParseUUID allocated %.0f times; want zero allocations", allocs)
+	}
+
+	allocs = testing.AllocsPerRun(1000, func() {
+		var err error
+		got, err = ParseUUIDBytes(input)
+		if err != nil {
+			t.Fatal(err)
+		}
+	})
+	if got != want {
+		t.Fatalf("got %s, want %s", got, want)
+	}
+	if allocs != 0 {
+		t.Fatalf("ParseUUIDBytes allocated %.0f times; want zero allocations", allocs)
+	}
+
+	var scanned UUID
+	if err := scanned.Scan(input); err != nil {
+		t.Fatal(err)
+	}
+	if scanned != want {
+		t.Fatalf("scanned %s, want %s", scanned, want)
+	}
+}
+
 func TestUUIDSQLTextAndBinaryRepresentations(t *testing.T) {
 	id := MustParseUUID("018fbd2e-7b46-7cc0-98c4-89e6f6dc0c22")
 
@@ -199,18 +242,35 @@ func TestUUIDSQLTextAndBinaryRepresentations(t *testing.T) {
 	if !ok || len(raw) != UUIDSize || !bytes.Equal(raw, id[:]) {
 		t.Fatalf("unexpected binary value %#v", binaryValue)
 	}
+	raw[0] ^= 0xff
+	if id[0] == raw[0] {
+		t.Fatal("BinaryUUID.Value returned mutable backing storage")
+	}
 
 	var fromText UUID
 	if err := fromText.Scan(id.String()); err != nil || fromText != id {
 		t.Fatalf("text scan: %v", err)
 	}
+	var fromTextBytes UUID
+	if err := fromTextBytes.Scan([]byte(id.String())); err != nil || fromTextBytes != id {
+		t.Fatalf("text bytes scan: %v", err)
+	}
 	var fromBinary BinaryUUID
-	if err := fromBinary.Scan(raw); err != nil || fromBinary.UUID() != id {
+	if err := fromBinary.Scan(id.Bytes()); err != nil || fromBinary.UUID() != id {
 		t.Fatalf("binary scan: %v", err)
 	}
 
 	var _ driver.Valuer = id
 	var _ driver.Valuer = id.Binary()
+}
+
+func TestUUIDBytesReturnsDefensiveCopy(t *testing.T) {
+	id := MustParseUUID("018fbd2e-7b46-7cc0-98c4-89e6f6dc0c22")
+	raw := id.Bytes()
+	raw[0] ^= 0xff
+	if id[0] == raw[0] {
+		t.Fatal("UUID.Bytes returned mutable backing storage")
+	}
 }
 
 func TestNullUUIDEmptyValuesAreInvalid(t *testing.T) {

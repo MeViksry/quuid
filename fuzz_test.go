@@ -74,6 +74,27 @@ func FuzzParseUUID(f *testing.F) {
 	})
 }
 
+func FuzzParseUUIDBytes(f *testing.F) {
+	f.Add([]byte("018fbd2e-7b46-7cc0-98c4-89e6f6dc0c22"))
+	f.Add([]byte(""))
+	f.Add([]byte(" 018fbd2e-7b46-7cc0-98c4-89e6f6dc0c22"))
+	f.Fuzz(func(t *testing.T, input []byte) {
+		id, err := ParseUUIDBytes(input)
+		if err != nil {
+			return
+		}
+		canonical := id.String()
+		inputString := string(input)
+		if canonical != inputString && strings.ToLower(inputString) != canonical {
+			t.Fatalf("strict byte parser accepted non-canonical input %q", input)
+		}
+		roundTrip, err := ParseUUID(canonical)
+		if err != nil || roundTrip != id {
+			t.Fatalf("round trip failed: %v", err)
+		}
+	})
+}
+
 func FuzzParseUUIDLoose(f *testing.F) {
 	f.Add("018fbd2e-7b46-7cc0-98c4-89e6f6dc0c22")
 	f.Add("{018fbd2e-7b46-7cc0-98c4-89e6f6dc0c22}")

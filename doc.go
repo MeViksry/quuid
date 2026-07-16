@@ -5,6 +5,6 @@
 // public identifiers, StrongID for a larger collision-security margin, and
 // Token for bearer secrets whose plaintext must not be logged or stored.
 //
-// ParseUUID is intentionally strict. ParseUUIDLoose is available only for
-// controlled migration boundaries.
+// ParseUUID and ParseUUIDBytes are intentionally strict. ParseUUIDLoose is
+// available only for controlled migration boundaries.
 package quuid

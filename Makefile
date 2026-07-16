@@ -26,6 +26,7 @@ legacy-hash-check:
 
 fuzz:
 	go test -fuzz='^FuzzParseUUID$' -fuzztime=10s .
+	go test -fuzz='^FuzzParseUUIDBytes$' -fuzztime=10s .
 	go test -fuzz='^FuzzParseUUIDLoose$' -fuzztime=10s .
 	go test -fuzz='^FuzzParseID$' -fuzztime=10s .
 	go test -fuzz='^FuzzParseStrongID$' -fuzztime=10s .

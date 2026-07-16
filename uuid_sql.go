@@ -81,7 +81,7 @@ func (id *BinaryUUID) UnmarshalText(text []byte) error {
 	if id == nil {
 		return fmt.Errorf("quuid: UnmarshalText on nil *BinaryUUID")
 	}
-	parsed, err := ParseUUID(string(text))
+	parsed, err := ParseUUIDBytes(text)
 	if err != nil {
 		return err
 	}
@@ -146,7 +146,7 @@ func scanUUIDSource(src any) (UUID, error) {
 			copy(id[:], value)
 			return id, nil
 		}
-		return ParseUUID(string(value))
+		return ParseUUIDBytes(value)
 	default:
 		return NilUUID, fmt.Errorf("%w: %T", ErrInvalidSource, src)
 	}

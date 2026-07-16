@@ -9,6 +9,12 @@ import (
 	"github.com/MeViksry/quuid"
 )
 
+var (
+	version = "dev"
+	commit  = "unknown"
+	date    = "unknown"
+)
+
 type result struct {
 	Type  string `json:"type"`
 	Value string `json:"value"`
@@ -20,7 +26,13 @@ func main() {
 	asJSON := flag.Bool("json", false, "emit JSON")
 	namespace := flag.String("namespace", "", "namespace for deterministic uuid8")
 	data := flag.String("data", "", "data for deterministic uuid8")
+	showVersion := flag.Bool("version", false, "print version information")
 	flag.Parse()
+
+	if *showVersion {
+		fmt.Printf("quuid %s\ncommit: %s\nbuilt: %s\n", version, commit, date)
+		return
+	}
 
 	if *count < 1 || *count > 1_000_000 {
 		fatalf("-n must be between 1 and 1000000")
