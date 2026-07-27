@@ -24,7 +24,7 @@ jobs:
       fail-fast: false
       matrix:
         go-version: ['1.23.x', '1.24.x', '1.25.x', '1.26.x']
-        os: [self-hosted]
+        os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -36,7 +36,7 @@ jobs:
 
   quality:
     name: Quality and security
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5

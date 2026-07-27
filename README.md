@@ -600,7 +600,7 @@ quuid -version
 
 ## Automated releases and packages
 
-GitHub automation publishes release assets and packages without adding runtime dependencies to the module. The workflows run on the repository's `self-hosted` runner label, matching the CI setup.
+GitHub automation publishes release assets and packages without adding runtime dependencies to the module. The workflows run on the repository's `ubuntu-latest` runner label, matching the CI setup.
 
 Every push to `main` updates a single prerelease named `nightly` with fresh CLI archives and checksums. This keeps the Releases page active without creating a noisy release for every commit.
 

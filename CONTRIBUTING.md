@@ -95,7 +95,7 @@ Release publishing is automated by GitHub Actions.
 
 The release workflow publishes CLI archives and checksums to GitHub Releases. The package workflow publishes the CLI container image to GitHub Container Registry on pushes to `main` and release tags.
 
-Both workflows use the `self-hosted` runner label. The package runner must have Docker available.
+Both workflows use the `ubuntu-latest` runner label. The package runner must have Docker available.
 
 ## Compatibility
 

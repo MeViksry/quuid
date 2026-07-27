@@ -12,8 +12,8 @@ The project follows semantic versioning after version 1.0. Before version 1.0, c
 - Fixed-clock concurrent UUIDv7 stress test for duplicate safety, timestamp stability, and monotonic ordering under contention.
 - Allocation-reporting benchmarks for UUID parsing, UUID text appending, and sequential/parallel UUIDv7 generation.
 - Compile-time tests for standard SQL, JSON, text, and binary encoding interface contracts.
-- Self-hosted GitHub Release workflow for `main` nightly prereleases and semver tag releases, including cross-platform CLI archives and checksums.
-- Self-hosted GitHub Container Registry package workflow for `main` and release tag pushes.
+- ubuntu-latest GitHub Release workflow for `main` nightly prereleases and semver tag releases, including cross-platform CLI archives and checksums.
+- ubuntu-latest GitHub Container Registry package workflow for `main` and release tag pushes.
 - CLI `-version` flag populated by release and package builds.
 
 ### Changed
