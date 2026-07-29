@@ -599,6 +599,8 @@ quuid -type uuid7 -json
 quuid -version
 ```
 
+Release archives include version, commit, and build time metadata. Builds installed with `go install ...@version` report the module version from Go build information.
+
 ## Automated releases and packages
 
 GitHub automation publishes release assets and packages without adding runtime dependencies to the module. The workflows run on GitHub-hosted `ubuntu-latest` runners, matching the CI setup.

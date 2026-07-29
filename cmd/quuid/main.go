@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"runtime/debug"
 
 	"github.com/MeViksry/quuid"
 )
@@ -30,6 +31,7 @@ func main() {
 	flag.Parse()
 
 	if *showVersion {
+		version, commit, date := versionInfo()
 		fmt.Printf("quuid %s\ncommit: %s\nbuilt: %s\n", version, commit, date)
 		return
 	}
@@ -104,4 +106,34 @@ func generate(kind, namespace, data string) (string, error) {
 func fatalf(format string, args ...any) {
 	fmt.Fprintf(os.Stderr, "quuid: "+format+"\n", args...)
 	os.Exit(1)
+}
+
+func versionInfo() (string, string, string) {
+	resolvedVersion := version
+	resolvedCommit := commit
+	resolvedDate := date
+
+	info, ok := debug.ReadBuildInfo()
+	if !ok {
+		return resolvedVersion, resolvedCommit, resolvedDate
+	}
+
+	if resolvedVersion == "dev" && info.Main.Version != "" && info.Main.Version != "(devel)" {
+		resolvedVersion = info.Main.Version
+	}
+
+	for _, setting := range info.Settings {
+		switch setting.Key {
+		case "vcs.revision":
+			if resolvedCommit == "unknown" && setting.Value != "" {
+				resolvedCommit = setting.Value
+			}
+		case "vcs.time":
+			if resolvedDate == "unknown" && setting.Value != "" {
+				resolvedDate = setting.Value
+			}
+		}
+	}
+
+	return resolvedVersion, resolvedCommit, resolvedDate
 }

@@ -10,6 +10,12 @@ The project follows semantic versioning after version 1.0. Before version 1.0, c
 
 - Reserved for the next release.
 
+## [0.2.1] - 2026-07-30
+
+### Changed
+
+- CLI `-version` falls back to Go build information so `go install github.com/MeViksry/quuid/cmd/quuid@version` reports the module version even without release ldflags.
+
 ## [0.2.0] - 2026-07-30
 
 ### Added
