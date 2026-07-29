@@ -80,5 +80,6 @@ Choose the SQL representation deliberately:
 - use a supported Go release;
 - review CI and vulnerability-scanner findings;
 - keep GitHub Actions dependencies updated;
+- review OpenSSF Scorecard and code-scanning findings;
 - verify release tags and checksums;
 - run `go test -race ./...` for changes affecting concurrent generation.

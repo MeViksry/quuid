@@ -7,6 +7,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/MeViksry/quuid/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/MeViksry/quuid/actions/workflows/ci.yml)
 [![Go Reference](https://img.shields.io/badge/Go%20Reference-pkg.go.dev-00ADD8?style=flat-square&logo=go&logoColor=white)](https://pkg.go.dev/github.com/MeViksry/quuid)
 [![Go Version](https://img.shields.io/github/go-mod/go-version/MeViksry/quuid?style=flat-square&logo=go&logoColor=white)](https://github.com/MeViksry/quuid/blob/main/go.mod)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/MeViksry/quuid/badge)](https://scorecard.dev/viewer/?uri=github.com/MeViksry/quuid)
 [![Release](https://img.shields.io/github/v/release/MeViksry/quuid?include_prereleases&style=flat-square)](https://github.com/MeViksry/quuid/releases)
 [![License](https://img.shields.io/github/license/MeViksry/quuid?style=flat-square)](https://github.com/MeViksry/quuid/blob/main/LICENSE)
 [![Open Issues](https://img.shields.io/github/issues/MeViksry/quuid?style=flat-square)](https://github.com/MeViksry/quuid/issues)
@@ -600,15 +601,15 @@ quuid -version
 
 ## Automated releases and packages
 
-GitHub automation publishes release assets and packages without adding runtime dependencies to the module. The workflows run on the repository's `ubuntu-latest` runner label, matching the CI setup.
+GitHub automation publishes release assets and packages without adding runtime dependencies to the module. The workflows run on GitHub-hosted `ubuntu-latest` runners, matching the CI setup.
 
 Every push to `main` updates a single prerelease named `nightly` with fresh CLI archives and checksums. This keeps the Releases page active without creating a noisy release for every commit.
 
 Push a semantic version tag to create an official GitHub Release:
 
 ```bash
-git tag v0.1.0
-git push origin v0.1.0
+git tag v0.2.0
+git push origin v0.2.0
 ```
 
 The release workflow verifies the candidate, builds `quuid` CLI archives for Linux, macOS, and Windows on amd64 and arm64, generates `checksums.txt`, and uploads everything to the GitHub Release.
@@ -653,6 +654,8 @@ go test -fuzz='^FuzzParseSortableID$' -fuzztime=30s .
 ```
 
 CI verifies multiple supported Go versions and operating systems, runs the race detector, `go vet`, vulnerability scanning, and a dependency-tree check that rejects `crypto/md5` and `crypto/sha1`.
+
+OpenSSF Scorecard runs on `main`, on a weekly schedule, and on manual dispatch. It publishes SARIF to GitHub code scanning and publishes results to the Scorecard API so deps.dev and Scorecard viewers can display supply-chain security signals.
 
 ## Compatibility policy
 

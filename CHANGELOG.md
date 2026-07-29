@@ -8,17 +8,25 @@ The project follows semantic versioning after version 1.0. Before version 1.0, c
 
 ### Added
 
+- Reserved for the next release.
+
+## [0.2.0] - 2026-07-30
+
+### Added
+
 - `ParseUUIDBytes` for strict canonical UUID parsing from `[]byte` integration boundaries.
 - Fixed-clock concurrent UUIDv7 stress test for duplicate safety, timestamp stability, and monotonic ordering under contention.
 - Allocation-reporting benchmarks for UUID parsing, UUID text appending, and sequential/parallel UUIDv7 generation.
 - Compile-time tests for standard SQL, JSON, text, and binary encoding interface contracts.
 - ubuntu-latest GitHub Release workflow for `main` nightly prereleases and semver tag releases, including cross-platform CLI archives and checksums.
 - ubuntu-latest GitHub Container Registry package workflow for `main` and release tag pushes.
+- OpenSSF Scorecard workflow with SARIF upload and published Scorecard API results.
 - CLI `-version` flag populated by release and package builds.
 
 ### Changed
 
 - Optimized strict UUID parsing and text-byte scanning to avoid parser success-path allocations.
+- Updated GitHub Actions workflows to Node 24-compatible action majors and removed the root `HOME` override for GitHub-hosted runners.
 
 ## [0.1.0] - 2026-07-15
 

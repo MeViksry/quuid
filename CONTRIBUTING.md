@@ -91,11 +91,11 @@ Release publishing is automated by GitHub Actions.
 1. Ensure `CHANGELOG.md` is updated.
 2. Run `make check`.
 3. Push to `main` for a refreshed `nightly` prerelease and `edge` package.
-4. Push a semantic version tag such as `v0.1.0` for an official release.
+4. Push a semantic version tag such as `v0.2.0` for an official release.
 
-The release workflow publishes CLI archives and checksums to GitHub Releases. The package workflow publishes the CLI container image to GitHub Container Registry on pushes to `main` and release tags.
+The release workflow publishes CLI archives and checksums to GitHub Releases. The package workflow publishes the CLI container image to GitHub Container Registry on pushes to `main` and release tags. The Scorecard workflow publishes SARIF and OpenSSF Scorecard results for supply-chain analysis.
 
-Both workflows use the `ubuntu-latest` runner label. The package runner must have Docker available.
+These workflows use GitHub-hosted `ubuntu-latest` runners. The package workflow requires Docker availability.
 
 ## Compatibility
 
